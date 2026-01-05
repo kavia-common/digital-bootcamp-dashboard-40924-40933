@@ -1,48 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import "./styles/theme.css";
+import { AppStateProvider } from "./context/AppStateContext";
+import { ToastProvider } from "./context/ToastContext";
+import { ToastViewport } from "./components/ToastViewport";
+import { RoleSelectPage } from "./pages/RoleSelectPage";
+import { ParticipantDashboardPage } from "./pages/ParticipantDashboardPage";
+import { HRDashboardPage } from "./pages/HRDashboardPage";
+import { ParticipantDetailsPage } from "./pages/ParticipantDetailsPage";
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
+  /** App entry: routing + providers for shared state and toasts. */
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ToastProvider>
+      <AppStateProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<RoleSelectPage />} />
+            <Route path="/participant" element={<ParticipantDashboardPage />} />
+            <Route path="/hr" element={<HRDashboardPage />} />
+            <Route path="/participants/:id" element={<ParticipantDetailsPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <ToastViewport />
+        </BrowserRouter>
+      </AppStateProvider>
+    </ToastProvider>
   );
 }
 
